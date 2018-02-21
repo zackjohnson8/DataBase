@@ -33,11 +33,27 @@ int main(int argc, char *argv[])
 
   // Begin parsing the data from .sql file
   std::string inputLine;
+  std::string parsedWord;
+  int holdInt;
+  char waitChar;
   while(inputFile.good())
   {
     // Take a line
     getline(inputFile, inputLine);
-    std::cout << inputLine << std::endl;
+
+    // Eat comments and blank lines
+    if(inputLine[0] != '-' && inputLine[0] != '\r')
+    {
+      // else the lines have content that must be parsed and handled
+      //std::cout << inputLine << std::endl;
+      holdInt = inputLine.find_first_of(' ', 0);
+
+      // determine how the line will be handled
+      // Parse the first word from the string
+      parsedWord = inputLine.substr(0, holdInt);
+      std::cout << parsedWord << std::endl;
+
+    }
 
   }
 
