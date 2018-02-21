@@ -36,8 +36,11 @@ int main(int argc, char *argv[])
   std::string parsedWord;
   int holdInt;
   char waitChar;
+  int lineCount = 0;
   while(inputFile.good())
   {
+    lineCount++;
+
     // Take a line
     getline(inputFile, inputLine);
 
@@ -50,8 +53,64 @@ int main(int argc, char *argv[])
 
       // determine how the line will be handled
       // Parse the first word from the string
-      parsedWord = inputLine.substr(0, holdInt);
-      std::cout << parsedWord << std::endl;
+
+      if(holdInt != -1)
+      {
+        parsedWord = inputLine.substr(0, holdInt);
+        //std::cout << parsedWord << std::endl;
+        if(parsedWord == "CREATE")
+        {
+
+          // TODO
+
+        }else
+        if(parsedWord == "DROP")
+        {
+
+          // TODO
+
+        }else
+        if(parsedWord == "USE")
+        {
+
+          // TODO
+
+        }else
+        if(parsedWord == "SELECT")
+        {
+
+          // TODO
+
+        }else
+        if(parsedWord == "ALTER")
+        {
+
+          // TODO
+
+        }else
+        {
+          if(inputFile.good())
+          {
+            std::cout << "ERROR: Problem detected reading in line " << lineCount << std::endl;
+          }
+        }
+      }else // Handle single word commands
+      {
+
+        if(inputLine == ".EXIT\r")
+        {
+
+          // TODO
+
+        }else
+        {
+          if(inputFile.good())
+          {
+            std::cout << "ERROR: Problem detected reading in line " << lineCount << std::endl;
+          }
+        }
+
+      }
 
     }
 
