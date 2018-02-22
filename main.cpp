@@ -207,10 +207,11 @@ int main(int argc, char *argv[])
           {
 
             // Get the name of the TABLE
-            holdInt2 = parsedWord.find_first_of(';',0);
-            parsedWord = parsedWord.substr(holdInt+1, holdInt2);
-            parsedWord.resize(parsedWord.size());
-            std::cout << "HERE " << parsedWord << std::endl;
+            parsedWord = inputLine.substr(holdInt, parsedWord.find_first_of(';', 0));
+
+            parsedWord = parsedWord.substr(parsedWord.find_first_of(' ',0)+1, parsedWord.size());
+            parsedWord.resize(parsedWord.size()-2);
+
             // Check existing databases to see if already there
             for(int index = 0; index < holdTables.size(); index++)
             {
@@ -227,7 +228,7 @@ int main(int argc, char *argv[])
             }else
             {
               std::cout << "Database " << holdTables.at(holdIndex)->name << " deleted" << std::endl;
-              holdDataBases.erase(holdDataBases.begin()+holdIndex);
+              holdTables.erase(holdTables.begin()+holdIndex);
             }
             foundDup = false;
 
