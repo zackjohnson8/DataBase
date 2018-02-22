@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
   int holdInt2;
   char waitChar;
   int lineCount = 0;
+  bool foundDup = false;
+  int holdIndex;
   while(inputFile.good())
   {
     lineCount++;
@@ -85,18 +87,40 @@ int main(int argc, char *argv[])
 
             //std::cout << parsedWord << std::endl;
             // Get the name of the DATABASE
-            parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-4);
-
+            holdInt2 = parsedWord.find_first_of(';',0);
+            parsedWord = parsedWord.substr(holdInt+1, holdInt2);
+            parsedWord.resize(parsedWord.size()-2);
             // Create a DATABASE
             newDataBase = new DataBaseStruct();
             newDataBase->name = parsedWord;
-            std::cout << newDataBase->name << std::endl;
+
+            // Check existing databases to see if already there
+            for(int index = 0; index < holdDataBases.size(); index++)
+            {
+              if(newDataBase->name == holdDataBases.at(index)->name)
+              {
+                foundDup = true;
+              }
+            }
+
+            if(foundDup)
+            {
+              std::cout << "!Failed to create database " << newDataBase->name << " because it already exists." << std::endl;
+              delete newDataBase;
+              newDataBase = NULL;
+            }else
+            {
+              holdDataBases.push_back(newDataBase);
+              std::cout << "DataBase " << newDataBase->name << " created." << std::endl;
+            }
+            foundDup = false;
 
           }else
           if(parsedWord.substr(0, holdInt) == "TABLE")
           {
 
             // TODO
+            //std::cout << parsedWord << std::endl;
 
           }else
           {
@@ -105,14 +129,56 @@ int main(int argc, char *argv[])
 
           }
 
-          //std::cout << std::endl << std::endl;
-          //std::cout << parsedWord << std::endl << std::endl;
-
         }else
         if(parsedWord == "DROP")
         {
 
-          // TODO
+          holdInt2 = inputLine.find_first_of(' ', holdInt+1);
+          parsedWord = inputLine.substr(holdInt+1, holdInt2);
+
+          holdInt = parsedWord.find_first_of(' ',0);
+
+          if(parsedWord.substr(0, holdInt) == "DATABASE")
+          {
+
+            // Get the name of the DATABASE
+            holdInt2 = parsedWord.find_first_of(';',0);
+            parsedWord = parsedWord.substr(holdInt+1, holdInt2);
+            parsedWord.resize(parsedWord.size());
+
+            // Check existing databases to see if already there
+            for(int index = 0; index < holdDataBases.size(); index++)
+            {
+              if(parsedWord == holdDataBases.at(index)->name)
+              {
+                foundDup = true;
+                holdIndex = index;
+              }
+            }
+
+            if(!foundDup)
+            {
+              std::cout << "!Failed to delete database " << parsedWord << " because it does not exists." << std::endl;
+            }else
+            {
+              std::cout << "Database " << holdDataBases.at(holdIndex)->name << " deleted" << std::endl;
+              holdDataBases.erase(holdDataBases.begin()+holdIndex);
+            }
+            foundDup = false;
+
+          }else
+          if(parsedWord.substr(0, holdInt) == "TABLE")
+          {
+
+            // TODO
+            //std::cout << parsedWord << std::endl;
+
+          }else
+          {
+
+            std::cout << "Trouble reading in CREATE what? at line " << lineCount << std::endl;
+
+          }
 
         }else
         if(parsedWord == "USE")
