@@ -1,6 +1,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <vector>
+
+struct DataBaseStruct
+{
+
+  std::string name;
+
+};
 
 // Functions
 
@@ -32,9 +40,12 @@ int main(int argc, char *argv[])
   }
 
   // Begin parsing the data from .sql file
+  std::vector<DataBaseStruct*> holdDataBases;
+  DataBaseStruct* newDataBase;
   std::string inputLine;
   std::string parsedWord;
   int holdInt;
+  int holdInt2;
   char waitChar;
   int lineCount = 0;
   while(inputFile.good())
@@ -61,7 +72,41 @@ int main(int argc, char *argv[])
         if(parsedWord == "CREATE")
         {
 
+          //std::cout << inputLine << std::endl;
           // TODO
+          // So far only have create TABLE
+          holdInt2 = inputLine.find_first_of(' ', holdInt+1);
+          parsedWord = inputLine.substr(holdInt+1, holdInt2);
+
+          holdInt = parsedWord.find_first_of(' ',0);
+
+          if(parsedWord.substr(0, holdInt) == "DATABASE")
+          {
+
+            //std::cout << parsedWord << std::endl;
+            // Get the name of the DATABASE
+            parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-4);
+
+            // Create a DATABASE
+            newDataBase = new DataBaseStruct();
+            newDataBase->name = parsedWord;
+            std::cout << newDataBase->name << std::endl;
+
+          }else
+          if(parsedWord.substr(0, holdInt) == "TABLE")
+          {
+
+            // TODO
+
+          }else
+          {
+
+            std::cout << "Trouble reading in CREATE what? at line " << lineCount << std::endl;
+
+          }
+
+          //std::cout << std::endl << std::endl;
+          //std::cout << parsedWord << std::endl << std::endl;
 
         }else
         if(parsedWord == "DROP")
