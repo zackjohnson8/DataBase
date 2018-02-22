@@ -10,6 +10,14 @@ struct DataBaseStruct
 
 };
 
+struct TableStruct
+{
+
+  std::string name;
+  std::vector<std::string> variables;
+
+};
+
 // Functions
 
 int main(int argc, char *argv[])
@@ -41,7 +49,9 @@ int main(int argc, char *argv[])
 
   // Begin parsing the data from .sql file
   std::vector<DataBaseStruct*> holdDataBases;
+  std::vector<TableStruct*> holdTables;
   DataBaseStruct* newDataBase;
+  TableStruct* newTable;
   std::string inputLine;
   std::string parsedWord;
   int holdInt;
@@ -74,8 +84,6 @@ int main(int argc, char *argv[])
         if(parsedWord == "CREATE")
         {
 
-          //std::cout << inputLine << std::endl;
-          // TODO
           // So far only have create TABLE
           holdInt2 = inputLine.find_first_of(' ', holdInt+1);
           parsedWord = inputLine.substr(holdInt+1, holdInt2);
@@ -119,8 +127,36 @@ int main(int argc, char *argv[])
           if(parsedWord.substr(0, holdInt) == "TABLE")
           {
 
-            // TODO
-            //std::cout << parsedWord << std::endl;
+            parsedWord = inputLine.substr(holdInt+2, inputLine.size());
+
+            // Take this statement and create what you need
+            // TABLE tbl_1 (a1 int, a2 varchar(20));
+            parsedWord.erase(parsedWord.begin(), parsedWord.begin()+parsedWord.find_first_of(' ', 0) + 1);
+
+            // Create a table for this
+            newTable = new TableStruct();
+            newTable->name = parsedWord.substr(0, parsedWord.find_first_of(' ', 0));
+
+            // Check for dup of table
+            for(int index = 0; index < holdTables.size(); index++)
+            {
+              if(newTable->name == holdTables.at(index)->name)
+              {
+                foundDup = true;
+              }
+            }
+
+            if(foundDup)
+            {
+              std::cout << "!Failed to create table " << newTable->name << " because it already exists." << std::endl;
+              delete newTable;
+              newTable = NULL;
+            }else
+            {
+              holdTables.push_back(newTable);
+              std::cout << "DataBase " << newTable->name << " created." << std::endl;
+            }
+            foundDup = false;
 
           }else
           {
@@ -169,6 +205,31 @@ int main(int argc, char *argv[])
           }else
           if(parsedWord.substr(0, holdInt) == "TABLE")
           {
+
+            // Get the name of the TABLE
+            holdInt2 = parsedWord.find_first_of(';',0);
+            parsedWord = parsedWord.substr(holdInt+1, holdInt2);
+            parsedWord.resize(parsedWord.size());
+            std::cout << "HERE " << parsedWord << std::endl;
+            // Check existing databases to see if already there
+            for(int index = 0; index < holdTables.size(); index++)
+            {
+              if(parsedWord == holdTables.at(index)->name)
+              {
+                foundDup = true;
+                holdIndex = index;
+              }
+            }
+
+            if(!foundDup)
+            {
+              std::cout << "!Failed to delete database " << parsedWord << " because it does not exists." << std::endl;
+            }else
+            {
+              std::cout << "Database " << holdTables.at(holdIndex)->name << " deleted" << std::endl;
+              holdDataBases.erase(holdDataBases.begin()+holdIndex);
+            }
+            foundDup = false;
 
             // TODO
             //std::cout << parsedWord << std::endl;
