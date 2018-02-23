@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
   std::string fileName;
   if(argc <= 1)
   {
-    std::cout << "Using default file name PA1_test.sql" << std::endl;
+    //std::cout << "Using default file name PA1_test.sql" << std::endl;
     fileName = "PA1_test.sql";
   }else
   {
-    std::cout << "Using provided file name " << argv[1] << std::endl;
+    //std::cout << "Using provided file name " << argv[1] << std::endl;
     fileName = argv[1];
   }
 
@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
   while(inputFile.good())
   {
     lineCount++;
+    foundDup = false;
 
     // Take a line
     getline(inputFile, inputLine);
@@ -197,10 +198,10 @@ int main(int argc, char *argv[])
 
             if(!foundDup)
             {
-              std::cout << "!Failed to delete database " << parsedWord << " because it does not exists." << std::endl;
+              std::cout << "!Failed to delete " << parsedWord << " because it does not exists." << std::endl;
             }else
             {
-              std::cout << "Database " << holdDataBases.at(holdIndex)->name << " deleted" << std::endl;
+              std::cout << "Database " << holdDataBases.at(holdIndex)->name << " deleted." << std::endl;
               holdDataBases.erase(holdDataBases.begin()+holdIndex);
             }
             foundDup = false;
@@ -227,10 +228,10 @@ int main(int argc, char *argv[])
 
             if(!foundDup)
             {
-              std::cout << "!Failed to delete database " << parsedWord << " because it does not exists." << std::endl;
+              std::cout << "!Failed to delete " << parsedWord << " because it does not exists." << std::endl;
             }else
             {
-              std::cout << "Database " << holdTables.at(holdIndex)->name << " deleted" << std::endl;
+              std::cout << "Database " << holdTables.at(holdIndex)->name << " deleted." << std::endl;
               holdTables.erase(holdTables.begin()+holdIndex);
             }
             foundDup = false;
@@ -272,15 +273,55 @@ int main(int argc, char *argv[])
             std::cout << "!Failed cannot USE a database that does not exist." << std::endl;
 
           }
-
-
           foundDup = false;
 
         }else
         if(parsedWord == "SELECT")
         {
 
-          // TODO
+          holdInt = inputLine.find_first_of(' ', 0);
+          parsedWord = inputLine.substr(holdInt+1, inputLine.size()-1);
+          holdInt = parsedWord.find_first_of(' ', 0);
+          parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+          holdInt = parsedWord.find_first_of(' ', 0);
+          parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+          parsedWord.resize(parsedWord.size()-2);
+
+          for(int index = 0; index < holdTables.size(); index++)
+          {
+            if(parsedWord == holdTables.at(index)->name)
+            {
+              foundDup = true;
+              holdIndex = index;
+            }
+          }
+          // found the searched for database
+          if(foundDup)
+          {
+            std::cout << "HERE" << std::endl;
+            for(
+                int index = 0;
+                index < holdTables.at(holdIndex)->variables.size();
+                index++
+               )
+            {
+
+              std::cout << holdTables.at(holdIndex)->variables.at(index);
+              if(index < holdTables.at(holdIndex)->variables.size())
+              {
+                std::cout << " | " << std::endl;
+              }
+            }
+
+            foundDup = false;
+          }else
+          {
+
+            std::cout << "!Failed cannot USE a database that does not exist." << std::endl;
+
+          }
+          foundDup = false;
+
 
         }else
         if(parsedWord == "ALTER")
