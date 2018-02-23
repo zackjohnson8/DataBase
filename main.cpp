@@ -23,6 +23,8 @@ struct TableStruct
 int main(int argc, char *argv[])
 {
 
+  std::cout << std::endl << std::endl;
+
   std::string fileName;
   if(argc <= 1)
   {
@@ -50,6 +52,7 @@ int main(int argc, char *argv[])
   // Begin parsing the data from .sql file
   std::vector<DataBaseStruct*> holdDataBases;
   std::vector<TableStruct*> holdTables;
+  DataBaseStruct* usedDataBase = NULL;
   DataBaseStruct* newDataBase;
   TableStruct* newTable;
   std::string inputLine;
@@ -232,9 +235,6 @@ int main(int argc, char *argv[])
             }
             foundDup = false;
 
-            // TODO
-            //std::cout << parsedWord << std::endl;
-
           }else
           {
 
@@ -246,7 +246,35 @@ int main(int argc, char *argv[])
         if(parsedWord == "USE")
         {
 
-          // TODO
+          holdInt = inputLine.find_first_of(' ', 0);
+          parsedWord = inputLine.substr(holdInt+1, inputLine.size()-2);
+
+          parsedWord.resize(parsedWord.size()-2);
+
+          for(int index = 0; index < holdDataBases.size(); index++)
+          {
+            if(parsedWord == holdDataBases.at(index)->name)
+            {
+              foundDup = true;
+              holdIndex = index;
+            }
+          }
+          // found the searched for database
+          if(foundDup)
+          {
+
+            usedDataBase = holdDataBases.at(holdIndex);
+            std::cout << "Using database " << usedDataBase->name << std::endl;
+
+          }else
+          {
+
+            std::cout << "!Failed cannot USE a database that does not exist." << std::endl;
+
+          }
+
+
+          foundDup = false;
 
         }else
         if(parsedWord == "SELECT")
@@ -289,6 +317,7 @@ int main(int argc, char *argv[])
 
   }
 
+  std::cout << std::endl << std::endl;
 
   return(0);
 }
