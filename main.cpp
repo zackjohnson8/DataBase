@@ -1,3 +1,12 @@
+/* Author: Zachary L. Johnson
+ * Date: February 22, 2018
+ * Verison: 1.0
+ * Description: To create a simple database which can be provided source files.
+ * The files are then parsed and databases/tables are created and saved to
+ * storage.
+ *
+*/
+
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
