@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
               newTable->variables.push_back(newString);
 
               holdTables.push_back(newTable);
-              std::cout << "DataBase " << newTable->name << " created." << std::endl;
+              std::cout << "Table " << newTable->name << " created." << std::endl;
             }
             foundDup = false;
 
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
               std::cout << "!Failed to delete " << parsedWord << " because it does not exists." << std::endl;
             }else
             {
-              std::cout << "Database " << holdTables.at(holdIndex)->name << " deleted." << std::endl;
+              std::cout << "Table " << holdTables.at(holdIndex)->name << " deleted." << std::endl;
               holdTables.erase(holdTables.begin()+holdIndex);
             }
             foundDup = false;
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
 
             usedDataBase = holdDataBases.at(holdIndex);
             holdTables.clear();
-            std::cout << "Using database " << usedDataBase->name << std::endl;
+            std::cout << "Using database " << usedDataBase->name << "." << std::endl;
 
           }else
           {
@@ -345,7 +345,44 @@ int main(int argc, char *argv[])
         if(parsedWord == "ALTER")
         {
 
-          // TODO
+          parsedWord = inputLine;
+
+          holdInt = parsedWord.find_first_of(' ', 0);
+          parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+          holdInt = parsedWord.find_first_of(' ', 0);
+          parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+          parsedWord.resize(parsedWord.size()-2);
+
+          std::string holdString = parsedWord.substr(0, parsedWord.find_first_of(' ',0));
+
+
+          for(int index = 0; index < holdTables.size(); index++)
+          {
+            if(holdString == holdTables.at(index)->name)
+            {
+              foundDup = true;
+              holdIndex = index;
+            }
+          }
+
+          if(foundDup)
+          {
+
+            holdInt = parsedWord.find_first_of(' ', 0);
+            parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+            holdInt = parsedWord.find_first_of(' ', 0);
+            parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+            newString = new std::string();
+            *newString = parsedWord;
+            holdTables.at(holdIndex)->variables.push_back(newString);
+
+            std::cout << "Table " << holdString << " modified." << std::endl;
+
+          }else
+          {
+            std::cout << "!Failed to alter " << holdString << " because it does not exist." << std::endl;
+          }
+
 
         }else
         {
@@ -360,7 +397,7 @@ int main(int argc, char *argv[])
         if(inputLine == ".EXIT\r")
         {
 
-          // TODO
+          std::cout << "All done." << std::endl;
 
         }else
         {
