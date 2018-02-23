@@ -24,7 +24,7 @@ USE db_2;
 SELECT * FROM tbl_1;
 CREATE TABLE tbl_1 (a3 float, a4 char(20));
 SELECT * FROM tbl_1;
-asdf
+
 .EXIT
 
 -- Expected output

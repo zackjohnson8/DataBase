@@ -14,7 +14,7 @@ struct TableStruct
 {
 
   std::string name;
-  std::vector<std::string> variables;
+  std::vector<std::string*> variables;
 
 };
 
@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
   DataBaseStruct* usedDataBase = NULL;
   DataBaseStruct* newDataBase;
   TableStruct* newTable;
+  std::string* newString;
   std::string inputLine;
   std::string parsedWord;
   int holdInt;
@@ -157,6 +158,21 @@ int main(int argc, char *argv[])
               newTable = NULL;
             }else
             {
+
+              holdInt = parsedWord.find_first_of('(', 0);
+              parsedWord = parsedWord.substr(holdInt+1, parsedWord.size()-1);
+              parsedWord.resize(parsedWord.size()-2);
+              newString = new std::string();
+              *newString = parsedWord.substr(0, parsedWord.find_first_of(',',0));
+              newTable->variables.push_back(newString);
+
+              holdInt = parsedWord.find_first_of(',', 0);
+              parsedWord = parsedWord.substr(holdInt+2, parsedWord.size()-1);
+              parsedWord.resize(parsedWord.size()-1);
+              newString = new std::string();
+              *newString = parsedWord;
+              newTable->variables.push_back(newString);
+
               holdTables.push_back(newTable);
               std::cout << "DataBase " << newTable->name << " created." << std::endl;
             }
@@ -265,6 +281,7 @@ int main(int argc, char *argv[])
           {
 
             usedDataBase = holdDataBases.at(holdIndex);
+            holdTables.clear();
             std::cout << "Using database " << usedDataBase->name << std::endl;
 
           }else
@@ -295,10 +312,11 @@ int main(int argc, char *argv[])
               holdIndex = index;
             }
           }
+          std::string tableName = parsedWord;
           // found the searched for database
           if(foundDup)
           {
-            std::cout << "HERE" << std::endl;
+
             for(
                 int index = 0;
                 index < holdTables.at(holdIndex)->variables.size();
@@ -306,18 +324,18 @@ int main(int argc, char *argv[])
                )
             {
 
-              std::cout << holdTables.at(holdIndex)->variables.at(index);
-              if(index < holdTables.at(holdIndex)->variables.size())
+              std::cout << *(holdTables.at(holdIndex)->variables.at(index));
+              if(index < holdTables.at(holdIndex)->variables.size()-1)
               {
-                std::cout << " | " << std::endl;
+                std::cout << " | ";
               }
             }
-
+            std::cout << std::endl;
             foundDup = false;
           }else
           {
 
-            std::cout << "!Failed cannot USE a database that does not exist." << std::endl;
+            std::cout << "!Failed to query table " << parsedWord << " because it does not exist." << std::endl;
 
           }
           foundDup = false;
