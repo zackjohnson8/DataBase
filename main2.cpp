@@ -25,12 +25,19 @@ struct TableStruct
 struct DataBaseStruct
 {
 
-  DataBaseStruct* name;
+  string name;
   std::vector<TableStruct*>* tables;
 
 };
 
-std::vector<string*> stringBreakDown(std::string& mstring);
+std::vector<string*>* stringBreakDown(std::string& mstring);
+
+void stringHandler(std::vector<string*>* mvector,
+                   std::vector<DataBaseStruct*>* vectorDataBases,
+                   ifstream& inputFile);
+
+bool searchDataBaseNames(std::string mstring,
+                         std::vector<DataBaseStruct*> mvector);
 
 int main(int argc, char *argv[])
 {
@@ -41,7 +48,7 @@ int main(int argc, char *argv[])
   if(argc <= 1)
   {
     //std::cout << "Using default file name PA1_test.sql" << std::endl;
-    fileName = "PA1_test.sql";
+    fileName = "PA2_test.sql";
   }else
   {
     //std::cout << "Using provided file name " << argv[1] << std::endl;
@@ -63,10 +70,9 @@ int main(int argc, char *argv[])
 
 
   // Begin parsing the data from .sql file
-  std::vector<TableStruct*> tableNew;
   std::vector<DataBaseStruct*> indexDataBases;
   std::string newLine;
-  std::vector<string*> returnedStrings;
+  std::vector<string*>* returnedStrings;
   int lineCount = 0; // Keeping track for error correction
   while(inputFile.good())
   {
@@ -79,10 +85,10 @@ int main(int argc, char *argv[])
     if(newLine[0] != '-' && newLine[0] != '\r')
     {
       returnedStrings = stringBreakDown(newLine);
-    }
 
-    // handle the returnedString
-    stringHandler(returnedStrings);
+      // handle the returnedString
+      stringHandler(returnedStrings, &indexDataBases, inputFile);
+    }
 
   }
 
@@ -93,10 +99,72 @@ int main(int argc, char *argv[])
 
 }
 
-std::vector<string*> stringBreakDown(std::string& mstring)
+bool searchDataBaseNames(std::string mstring,
+                        std::vector<DataBaseStruct*>* mvector)
 {
 
-  std::vector<string*> stringVector;
+  int index;
+  for(index = 0; index < mvector->size(); index++)
+  {
+    if(mstring == mvector->at(index)->name)
+    {
+      return true; // found a database with the same name
+    }
+  }
+  return false;
+
+}
+
+// Passing the file for multiple line commands. Determine what we are going for then modify the algorithm based on the first line.
+void stringHandler(std::vector<string*>* mvector,
+                   std::vector<DataBaseStruct*>* vectorDataBases,
+                   ifstream& inputFile)
+{
+
+  DataBaseStruct* newDataBaseStruct;
+  string* stringHold = mvector->at(0);
+  bool exist = false;
+
+  if(*stringHold == "CREATE")
+  {
+    stringHold = mvector->at(1);
+    if(*stringHold == "DATABASE")
+    {
+      stringHold = mvector->at(2);
+      // Does this database already exist?
+      // NO? then we can create the database
+      if(!searchDataBaseNames(*stringHold, vectorDataBases))
+      {
+        newDataBaseStruct = new DataBaseStruct();
+        newDataBaseStruct->name = *stringHold;
+        vectorDataBases->push_back(newDataBaseStruct);
+        std::cout << "Database " << *stringHold << " created." << std::endl;
+      }else
+      {
+          std::cout << "Database " << *stringHold << " could not be created due to duplicate." << std::endl;
+      }
+
+
+    }else
+    if(*stringHold == "TABLE")
+    {
+
+
+    }else
+    {
+
+      // Can't create whatever was sent to this function
+      std::cout << "ERROR(stringHandler): Cannot CREATE a " << *stringHold << std::endl;
+
+    }
+  }
+
+}
+
+std::vector<string*>* stringBreakDown(std::string& mstring)
+{
+
+  std::vector<string*>* stringVector = new vector<string*>();
   std::string* stringHold;
   int intHold;
 
@@ -110,7 +178,7 @@ std::vector<string*> stringBreakDown(std::string& mstring)
     // fill stringHold with new data and push to stringVector
     stringHold = new string();
     *stringHold = mstring.substr( 0, intHold );
-    stringVector.push_back(stringHold);
+    stringVector->push_back(stringHold);
     //cout << *stringHold << endl;
 
     // change mstring to minus the word we just took
@@ -123,7 +191,7 @@ std::vector<string*> stringBreakDown(std::string& mstring)
   // Handle the last word for each string
   stringHold = new string();
   *stringHold = mstring.substr(0, mstring.find_first_of(';', 0));
-  stringVector.push_back(stringHold);
+  stringVector->push_back(stringHold);
 
   return stringVector;
 
