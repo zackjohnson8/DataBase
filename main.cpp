@@ -248,17 +248,18 @@ int lineHandler(const std::string& inputLine,
 
       parsedWord.resize(parsedWord.size()-2);
 
-      for(int index = 0; index < holdDataBases->size(); index++)
-      {
-        if(parsedWord == holdDataBases->at(index)->name)
-        {
-          foundDup = true;
-          holdIndex = index;
-        }
-      }
       // found the searched for database
       if(foundDup)
       {
+
+        for(int index = 0; index < holdDataBases->size(); index++)
+        {
+          if(parsedWord == holdDataBases->at(index)->name)
+          {
+            foundDup = true;
+            holdIndex = index;
+          }
+        }
 
         // save a copy of this database first then clear
         if(!holdTables->empty())
