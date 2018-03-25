@@ -26,9 +26,11 @@ struct DataBaseStruct
 {
 
   string name;
-  std::vector<TableStruct*>* tables;
+  std::vector<TableStruct*> tables;
 
 };
+
+string USED;
 
 std::vector<string*>* stringBreakDown(std::string& mstring);
 
@@ -99,22 +101,6 @@ int main(int argc, char *argv[])
 
 }
 
-bool searchDataBaseNames(std::string mstring,
-                        std::vector<DataBaseStruct*>* mvector)
-{
-
-  int index;
-  for(index = 0; index < mvector->size(); index++)
-  {
-    if(mstring == mvector->at(index)->name)
-    {
-      return true; // found a database with the same name
-    }
-  }
-  return false;
-
-}
-
 // Passing the file for multiple line commands. Determine what we are going for then modify the algorithm based on the first line.
 void stringHandler(std::vector<string*>* mvector,
                    std::vector<DataBaseStruct*>* vectorDataBases,
@@ -123,6 +109,7 @@ void stringHandler(std::vector<string*>* mvector,
 
   DataBaseStruct* newDataBaseStruct;
   string* stringHold = mvector->at(0);
+  int intHold;
   bool exist = false;
 
   if(*stringHold == "CREATE")
@@ -148,6 +135,13 @@ void stringHandler(std::vector<string*>* mvector,
     }else
     if(*stringHold == "TABLE")
     {
+      stringHold = mvector->at(1); // get the table name
+
+      // Locate the database to add a table to it
+      int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+      int tableIndex = getTableIndex(*stringHold, vectorDataBases->tables);
+
+      // If the tableIndex is -1 then create the table and place it into the database
 
 
     }else
@@ -157,8 +151,46 @@ void stringHandler(std::vector<string*>* mvector,
       std::cout << "ERROR(stringHandler): Cannot CREATE a " << *stringHold << std::endl;
 
     }
+  }else
+  if(*stringHold == "USE")
+  {
+    stringHold = mvector->at(1);
+    // If the DB exist then you can use it
+    if(searchDataBaseNames(*stringHold, vectorDataBases))
+    {
+      USED = *stringHold;
+      std::cout << "Using database " << *stringHold << std::endl;
+    }else
+    {
+      std::cout << "Error: Cannot use a database that does not exist." << std::endl;
+    }
   }
 
+}
+
+int getDataBaseIndex(std::string mstring, std::vector<DataBaseStruct*>* mvector)
+{
+
+  int index;
+  for(index = 0; index < mvector->size(); index++)
+  {
+
+
+  }
+
+  return -1;
+}
+
+int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector))
+{
+
+  for(index = 0; index < mvector->size(); index++)
+  {
+
+
+  }
+
+  return -1;
 }
 
 std::vector<string*>* stringBreakDown(std::string& mstring)
@@ -197,7 +229,21 @@ std::vector<string*>* stringBreakDown(std::string& mstring)
 
 }
 
+bool searchDataBaseNames(std::string mstring,
+                        std::vector<DataBaseStruct*>* mvector)
+{
 
+  int index;
+  for(index = 0; index < mvector->size(); index++)
+  {
+    if(mstring == mvector->at(index)->name)
+    {
+      return true; // found a database with the same name
+    }
+  }
+  return false;
+
+}
 /*
 
 
