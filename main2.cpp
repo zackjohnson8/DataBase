@@ -14,11 +14,21 @@
 
 using namespace std;
 
+struct TableValueStruct
+{
+
+  std::vector<string> values;
+
+};
+
 struct TableStruct
 {
 
   std::string name;
-  std::vector<std::string*> variables;
+  std::vector<TableValueStruct*> storage;
+  int numberOfVariables;
+  std::vector<string> variableNames;
+  std::vector<string> variableTypes;
 
 };
 
@@ -32,6 +42,8 @@ struct DataBaseStruct
 
 string USED;
 
+////// FUNCTION DECLARATION ///////////////
+
 std::vector<string*>* stringBreakDown(std::string& mstring);
 
 void stringHandler(std::vector<string*>* mvector,
@@ -39,7 +51,14 @@ void stringHandler(std::vector<string*>* mvector,
                    ifstream& inputFile);
 
 bool searchDataBaseNames(std::string mstring,
-                         std::vector<DataBaseStruct*> mvector);
+                         std::vector<DataBaseStruct*>* mvector);
+
+int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector);
+
+int getDataBaseIndex(std::string mstring,
+                     std::vector<DataBaseStruct*>* mvector);
+
+//////////////////////////////////////////////
 
 int main(int argc, char *argv[])
 {
@@ -111,6 +130,7 @@ void stringHandler(std::vector<string*>* mvector,
   string* stringHold = mvector->at(0);
   int intHold;
   bool exist = false;
+  bool loopEnd = true;
 
   if(*stringHold == "CREATE")
   {
@@ -135,14 +155,64 @@ void stringHandler(std::vector<string*>* mvector,
     }else
     if(*stringHold == "TABLE")
     {
-      stringHold = mvector->at(1); // get the table name
+      stringHold = mvector->at(2); // get the table name
 
       // Locate the database to add a table to it
       int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
-      int tableIndex = getTableIndex(*stringHold, vectorDataBases->tables);
+      // Using the dataBaseIndex find the table
+      int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
 
       // If the tableIndex is -1 then create the table and place it into the database
+      if(tableIndex == -1)
+      {
 
+        TableStruct* newTable = new TableStruct();
+        newTable->numberOfVariables = 0; // None ATM
+        // set name
+        newTable->name = *stringHold;
+        // build a way to handle x amount of variables
+        // Handle the first value
+        stringHold = mvector->at(3); // grab for next part
+        *stringHold = stringHold->substr(1, stringHold->size()); // eat (
+        newTable->variableNames.push_back(*stringHold);
+        newTable->numberOfVariables++;
+        // set the type for first value
+        intHold = 4;
+        stringHold = mvector->at(intHold);
+        *stringHold = stringHold->substr(0, stringHold->size()-1); // eat , or )
+        newTable->variableTypes.push_back(*stringHold);
+        intHold++;
+
+        // Now for the loop
+        while(loopEnd)
+        {
+          newTable->numberOfVariables++;
+          // Handle Name of variable
+          stringHold = mvector->at(intHold);
+          intHold++;
+          newTable->variableNames.push_back(*stringHold);
+          // Handle Type of variable
+          stringHold = mvector->at(intHold);
+          intHold++;
+          // Check if this is last variable
+          if(stringHold->at(stringHold->size()-1) == ')')
+          {
+            // Since its ')' this is end
+            loopEnd = !loopEnd;
+          }
+
+          // Now modify and place like usual
+          *stringHold = stringHold->substr(0, stringHold->size()-1); // eat , or )
+          newTable->variableTypes.push_back(*stringHold);
+        }
+
+        vectorDataBases->at(dataBaseIndex)->tables.push_back(newTable);
+
+      }else
+      {
+        // Table already exists
+        std::cout << "ERROR: Cannot CREATE a table that already exists" << std::endl;
+      }
 
     }else
     {
@@ -174,20 +244,25 @@ int getDataBaseIndex(std::string mstring, std::vector<DataBaseStruct*>* mvector)
   int index;
   for(index = 0; index < mvector->size(); index++)
   {
-
-
+    if(mvector->at(index)->name == mstring)
+    {
+      return index;
+    }
   }
 
   return -1;
 }
 
-int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector))
+int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector)
 {
 
+  int index;
   for(index = 0; index < mvector->size(); index++)
   {
-
-
+    if(mvector->at(index)->name == mstring)
+    {
+      return index;
+    }
   }
 
   return -1;

@@ -248,18 +248,17 @@ int lineHandler(const std::string& inputLine,
 
       parsedWord.resize(parsedWord.size()-2);
 
+      for(int index = 0; index < holdDataBases->size(); index++)
+      {
+        if(parsedWord == holdDataBases->at(index)->name)
+        {
+          foundDup = true;
+          holdIndex = index;
+        }
+      }
       // found the searched for database
       if(foundDup)
       {
-
-        for(int index = 0; index < holdDataBases->size(); index++)
-        {
-          if(parsedWord == holdDataBases->at(index)->name)
-          {
-            foundDup = true;
-            holdIndex = index;
-          }
-        }
 
         // save a copy of this database first then clear
         if(!holdTables->empty())
@@ -270,14 +269,14 @@ int lineHandler(const std::string& inputLine,
           {
             newCombo->tables->push_back(holdTables->at(index));
           }
+
+
+          // clear
+          std::cout << "BOOM" << std::endl;
+          usedDataBase = holdDataBases->at(holdIndex);
+          holdTables->clear();
+          std::cout << "Using database " << usedDataBase->name << "." << std::endl;
         }
-
-
-        // clear
-        std::cout << "BOOM" << std::endl;
-        usedDataBase = holdDataBases->at(holdIndex);
-        holdTables->clear();
-        std::cout << "Using database " << usedDataBase->name << "." << std::endl;
 
       }else
       {
@@ -437,28 +436,5 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
   }
 
-  // Begin parsing the data from .sql file
-  std::vector<DataBaseStruct*> holdDataBases;
-  std::vector<TableStruct*> holdTables;
-  std::vector<DataBaseTableCombo*> dataBaseList;
-  std::string inputLine;
-  int lineCount = 0;
-  while(inputFile.good())
-  {
-    lineCount++;
-
-    // Take a line
-    getline(inputFile, inputLine);
-
-    // if its not a eat line then send it to lineHandler
-    if(inputLine[0] != '-' && inputLine[0] != '\r')
-    {
-      lineHandler(inputLine, &holdTables, &holdDataBases, &dataBaseList, lineCount, inputFile);
-    }
-
-  }
-
-  std::cout << std::endl << std::endl;
-
-  return(0);
+  
 }
