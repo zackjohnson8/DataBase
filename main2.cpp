@@ -207,6 +207,7 @@ void stringHandler(std::vector<string*>* mvector,
         }
 
         vectorDataBases->at(dataBaseIndex)->tables.push_back(newTable);
+        std::cout << "Table " << newTable->name << " created." << std::endl;
 
       }else
       {
@@ -234,6 +235,58 @@ void stringHandler(std::vector<string*>* mvector,
     {
       std::cout << "Error: Cannot use a database that does not exist." << std::endl;
     }
+  }else
+  if(*stringHold == "insert")
+  {
+    stringHold = mvector->at(1); // Take in into
+    stringHold = mvector->at(2); // Which table?
+    intHold = 3;
+
+    // Locate the database to add a table to it
+    int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+    // Using the dataBaseIndex find the table
+    int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+    TableValueStruct* newTableValues;
+    if(tableIndex != -1) // it exists
+    {
+      newTableValues = new TableValueStruct();
+      // Time to into all the values into the tables
+      stringHold = mvector->at(intHold);
+      *stringHold = stringHold->substr(7, stringHold->size());
+      stringHold->resize(stringHold->size()-1); // just clean first value
+      newTableValues->values.push_back(*stringHold);
+      intHold++;
+
+      // After handling the first value, handle the others with a loop
+      while(loopEnd)
+      {
+        newTableValues = new TableValueStruct();
+        // Grab next value to run with
+        stringHold = mvector->at(intHold);
+        intHold++;
+
+        // check if finished
+        if(stringHold->at(stringHold->size()-1) == ')')
+        {
+          // Since its ')' this is end
+          loopEnd = !loopEnd;
+        }
+
+        // Resize the string by 1
+        stringHold->resize(stringHold->size()-1);
+
+        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.push_back(newTableValues);
+      }
+
+      std::cout << "1 new record inserted." << std::endl;
+
+    }else
+    {
+      std::cout << "ERROR: Cannot insert into a table that doesn't exist." << std::endl;
+    }
+
+
   }
 
 }
@@ -292,7 +345,6 @@ std::vector<string*>* stringBreakDown(std::string& mstring)
     mstring = mstring.substr(intHold+1, mstring.size());
 
     //cin >> intHold;
-
   }
 
   // Handle the last word for each string
