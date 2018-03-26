@@ -40,7 +40,17 @@ struct DataBaseStruct
 
 };
 
+struct SelectedStruct
+{
+
+  string name;
+  std::vector<int> positions;
+  bool all;
+
+};
+
 string USED;
+SelectedStruct SELECTED;
 
 ////// FUNCTION DECLARATION ///////////////
 
@@ -286,6 +296,60 @@ void stringHandler(std::vector<string*>* mvector,
       std::cout << "ERROR: Cannot insert into a table that doesn't exist." << std::endl;
     }
 
+
+  }else
+  if(*stringHold == "select")
+  {
+    // What to select?
+    stringHold = mvector->at(1);
+
+    if(*stringHold == "*")// grab all values
+    {
+      stringHold = mvector->at(2); // from
+      stringHold = mvector->at(3); // name of TableStruct
+
+      // Locate the database to add a table to it
+      int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+      // Using the dataBaseIndex find the table
+      int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+      // We now have the location of, for our example, Product
+      if(tableIndex == -1) // couldn't find it
+      {
+
+        std::cout << "ERROR: Cannot select a table that does not exist." << std::endl;
+
+      }else
+      {
+
+        SELECTED = *stringHold;
+
+        // else, selected all so lets output for that
+        int index;
+        for(index = 0;
+            index < (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1);
+            index++
+        )
+        {
+          // Print each variableName and variableType
+          std::cout <<
+          vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index) << " " <<
+          vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index) << "|";
+
+        }
+
+        intHold = vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables - 1;
+
+        std::cout <<
+        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(intHold) << " " <<
+        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(intHold) << std::endl;
+
+
+      }
+
+
+
+    }
 
   }
 
