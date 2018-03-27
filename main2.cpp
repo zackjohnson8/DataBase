@@ -103,6 +103,7 @@ int main(int argc, char *argv[])
   // Begin parsing the data from .sql file
   std::vector<DataBaseStruct*> indexDataBases;
   std::string newLine;
+  std::string holdString;
   std::vector<string*>* returnedStrings;
   int lineCount = 0; // Keeping track for error correction
   while(inputFile.good())
@@ -112,13 +113,46 @@ int main(int argc, char *argv[])
     // Take a line
     getline(inputFile, newLine);
 
-    // if its not a eat line then send it to lineHandler
-    if(newLine[0] != '-' && newLine[0] != '\r')
+    if(inputFile.good())
     {
-      returnedStrings = stringBreakDown(newLine);
+      // if its not a eat line then send it to lineHandler
+      if(newLine[0] != '-' && newLine[0] != '\r')
+      {
 
-      // handle the returnedString
-      stringHandler(returnedStrings, &indexDataBases, inputFile);
+        std::cout << lineCount << " ";
+        std::cout << "the line is " << newLine << std::endl;
+        newLine.resize(newLine.size()-1);
+
+        if(newLine.at(newLine.size()-1) == ';')
+        {
+
+          returnedStrings = stringBreakDown(newLine);
+          // handle the returnedString
+          stringHandler(returnedStrings, &indexDataBases, inputFile);
+
+        }else
+        {
+
+          holdString = newLine;
+          getline(inputFile, newLine);
+
+          // else the string still has more lines to read in
+          while(newLine.at(newLine.size()-1) != ';')
+          {
+
+            lineCount++;
+            getline(inputFile, newLine);
+            newLine.resize(newLine.size()-1); // kill end line
+            holdString.append(" "); // throw a space where the end line was
+            holdString.append(newLine);
+
+          }
+
+          returnedStrings = stringBreakDown(holdString);
+
+        }
+      }
+
     }
 
   }
@@ -155,7 +189,10 @@ void stringHandler(std::vector<string*>* mvector,
         newDataBaseStruct = new DataBaseStruct();
         newDataBaseStruct->name = *stringHold;
         vectorDataBases->push_back(newDataBaseStruct);
-        std::cout << "Database " << *stringHold << " created." << std::endl;
+        if(debugging)
+        {
+          std::cout << "Database " << *stringHold << " created." << std::endl;
+        }
       }else
       {
           std::cout << "Database " << *stringHold << " could not be created due to duplicate." << std::endl;
@@ -217,7 +254,10 @@ void stringHandler(std::vector<string*>* mvector,
         }
 
         vectorDataBases->at(dataBaseIndex)->tables.push_back(newTable);
-        std::cout << "Table " << newTable->name << " created." << std::endl;
+        if(debugging)
+        {
+          std::cout << "Table " << newTable->name << " created." << std::endl;
+        }
 
       }else
       {
@@ -305,6 +345,7 @@ void stringHandler(std::vector<string*>* mvector,
 
     if(*stringHold == "*")// grab all values
     {
+      SELECTED.all = true;
       stringHold = mvector->at(2); // from
       stringHold = mvector->at(3); // name of TableStruct
 
@@ -322,7 +363,7 @@ void stringHandler(std::vector<string*>* mvector,
       }else
       {
 
-        SELECTED = *stringHold;
+        SELECTED.name = *stringHold;
 
         // else, selected all so lets output for that
         int index;
@@ -347,6 +388,57 @@ void stringHandler(std::vector<string*>* mvector,
 
       }
 
+
+
+    }else // Wasn't select *
+    {
+
+      SELECTED.all = false;
+      intHold = 2;
+
+      std::vector<string> holdStrings;
+      // So whats the string then. We've got either 1 or many selects
+
+      while(stringHold->at(stringHold->size()-1) == ',')
+      {
+        // Remove the comma
+        stringHold->resize(stringHold->size()-1);
+        // Place the item into the holdStrings
+        holdStrings.push_back(*stringHold);
+
+        *stringHold = stringHold->at(intHold);
+        intHold++;
+
+      }
+
+      holdStrings.push_back(*stringHold);
+      intHold++;
+
+      // Take all these selected FROM who?
+      /**stringHold = stringHold->at(intHold);
+      intHold++;
+      if(*stringHold == "from")
+      {
+
+        std::cout << "yes" << std::endl;
+
+      }else
+      {
+
+        std::cout << "ERROR: from selected but from who?" << std::endl;
+
+      }
+*/
+
+      // Got all the selected values. Need positions of variableNames
+      // Locate the database to add a table to it
+      /*
+      int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+      // Using the dataBaseIndex find the table
+      int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+      */
+
+      std::cout << "The int = " << intHold << std::endl;
 
 
     }
