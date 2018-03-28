@@ -51,6 +51,7 @@ struct SelectedStruct
 
 string USED;
 SelectedStruct SELECTED;
+const bool debugging = true;
 
 ////// FUNCTION DECLARATION ///////////////
 
@@ -116,11 +117,9 @@ int main(int argc, char *argv[])
     if(inputFile.good())
     {
       // if its not a eat line then send it to lineHandler
-      if(newLine[0] != '-' && newLine[0] != '\r')
+      if(newLine[0] != '-' && newLine[0] != '\r' && newLine != ".exit\r")
       {
 
-        std::cout << lineCount << " ";
-        std::cout << "the line is " << newLine << std::endl;
         newLine.resize(newLine.size()-1);
 
         if(newLine.at(newLine.size()-1) == ';')
@@ -134,23 +133,24 @@ int main(int argc, char *argv[])
         {
 
           holdString = newLine;
-          getline(inputFile, newLine);
 
           // else the string still has more lines to read in
-          while(newLine.at(newLine.size()-1) != ';')
+          while(holdString.at(holdString.size()-1) != ';')
           {
 
             lineCount++;
             getline(inputFile, newLine);
-            newLine.resize(newLine.size()-1); // kill end line
             holdString.append(" "); // throw a space where the end line was
+            newLine.resize(newLine.size()-1); // kill end line
             holdString.append(newLine);
 
           }
 
           returnedStrings = stringBreakDown(holdString);
-
+          newLine = holdString;
         }
+
+
       }
 
     }
@@ -280,7 +280,11 @@ void stringHandler(std::vector<string*>* mvector,
     if(searchDataBaseNames(*stringHold, vectorDataBases))
     {
       USED = *stringHold;
-      std::cout << "Using database " << *stringHold << std::endl;
+      if(debugging)
+      {
+        std::cout << "Using database " << *stringHold << std::endl;
+      }
+
     }else
     {
       std::cout << "Error: Cannot use a database that does not exist." << std::endl;
@@ -328,8 +332,11 @@ void stringHandler(std::vector<string*>* mvector,
 
         vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.push_back(newTableValues);
       }
+      if(debugging)
+      {
+        std::cout << "1 new record inserted." << std::endl;
+      }
 
-      std::cout << "1 new record inserted." << std::endl;
 
     }else
     {
@@ -373,17 +380,23 @@ void stringHandler(std::vector<string*>* mvector,
         )
         {
           // Print each variableName and variableType
+          if(debugging)
+          {
           std::cout <<
           vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index) << " " <<
           vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index) << "|";
+          }
 
         }
 
         intHold = vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables - 1;
 
+        if(debugging)
+        {
         std::cout <<
         vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(intHold) << " " <<
         vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(intHold) << std::endl;
+        }
 
 
       }
@@ -415,7 +428,7 @@ void stringHandler(std::vector<string*>* mvector,
       intHold++;
 
       // Take all these selected FROM who?
-      /**stringHold = stringHold->at(intHold);
+      *stringHold = stringHold->at(intHold);
       intHold++;
       if(*stringHold == "from")
       {
@@ -428,7 +441,7 @@ void stringHandler(std::vector<string*>* mvector,
         std::cout << "ERROR: from selected but from who?" << std::endl;
 
       }
-*/
+
 
       // Got all the selected values. Need positions of variableNames
       // Locate the database to add a table to it
@@ -438,7 +451,7 @@ void stringHandler(std::vector<string*>* mvector,
       int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
       */
 
-      std::cout << "The int = " << intHold << std::endl;
+      //std::cout << "The int = " << intHold << std::endl;
 
 
     }
