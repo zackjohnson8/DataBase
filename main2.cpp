@@ -24,11 +24,11 @@ struct TableValueStruct
 struct TableStruct
 {
 
-  std::string name;
+  std::string name; // Product
   std::vector<TableValueStruct*> storage;
-  int numberOfVariables;
-  std::vector<string> variableNames;
-  std::vector<string> variableTypes;
+  int numberOfVariables; // 3
+  std::vector<string> variableNames; // pid, name, price
+  std::vector<string> variableTypes; // int, varchar(20), float
 
 };
 
@@ -68,6 +68,8 @@ int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector);
 
 int getDataBaseIndex(std::string mstring,
                      std::vector<DataBaseStruct*>* mvector);
+
+int getIndexStringVector(std::string mstring, std::vector<string>* mvector);
 
 //////////////////////////////////////////////
 
@@ -147,6 +149,7 @@ int main(int argc, char *argv[])
           }
 
           returnedStrings = stringBreakDown(holdString);
+          stringHandler(returnedStrings, &indexDataBases, inputFile);
           newLine = holdString;
         }
 
@@ -175,6 +178,8 @@ void stringHandler(std::vector<string*>* mvector,
   int intHold;
   bool exist = false;
   bool loopEnd = true;
+
+
 
   if(*stringHold == "CREATE")
   {
@@ -315,7 +320,7 @@ void stringHandler(std::vector<string*>* mvector,
       // After handling the first value, handle the others with a loop
       while(loopEnd)
       {
-        newTableValues = new TableValueStruct();
+
         // Grab next value to run with
         stringHold = mvector->at(intHold);
         intHold++;
@@ -329,9 +334,13 @@ void stringHandler(std::vector<string*>* mvector,
 
         // Resize the string by 1
         stringHold->resize(stringHold->size()-1);
+        // Push the string into storage container
+        newTableValues->values.push_back(*stringHold);
 
-        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.push_back(newTableValues);
       }
+
+      vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.push_back(newTableValues);
+
       if(debugging)
       {
         std::cout << "1 new record inserted." << std::endl;
@@ -411,7 +420,6 @@ void stringHandler(std::vector<string*>* mvector,
 
       std::vector<string> holdStrings;
       // So whats the string then. We've got either 1 or many selects
-
       while(stringHold->at(stringHold->size()-1) == ',')
       {
         // Remove the comma
@@ -419,21 +427,96 @@ void stringHandler(std::vector<string*>* mvector,
         // Place the item into the holdStrings
         holdStrings.push_back(*stringHold);
 
-        *stringHold = stringHold->at(intHold);
+        stringHold = mvector->at(intHold);
         intHold++;
 
       }
 
       holdStrings.push_back(*stringHold);
-      intHold++;
 
       // Take all these selected FROM who?
-      *stringHold = stringHold->at(intHold);
+      stringHold = mvector->at(intHold);
       intHold++;
+
       if(*stringHold == "from")
       {
 
-        std::cout << "yes" << std::endl;
+        // Get the name of database
+        stringHold = mvector->at(intHold);
+        intHold++;
+        // Take that value and find the index. We'll need to convert the first letter to a cap
+        stringHold->at(0) = toupper(stringHold->at(0));
+
+        // Locate both the table and database
+        int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+        // Using the dataBaseIndex find the table
+        int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+        // where what?
+        stringHold = mvector->at(intHold);
+        intHold++;
+
+        if(*stringHold == "where")
+        {
+
+          string* varName = mvector->at(intHold);
+          intHold++;
+          string* varOperator = mvector->at(intHold);
+          intHold++;
+          string* varCheck = mvector->at(intHold);
+          intHold++;
+
+          // We now have the location of, for our example, Product
+          if(tableIndex == -1) // couldn't find it
+          {
+
+            std::cout << "ERROR: Cannot select a table that does not exist." << std::endl;
+
+          }else
+          {
+
+            if(*varOperator == "!=")
+            { // TODO: This needs to be done after insert is handled
+
+              // else, selected all so lets output for that
+              int index;
+              for(index = 0;
+                  index < (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size());
+                  index++
+              ) // Go from 0 to the size of storage
+              {
+                // Print each variableName and variableType
+
+
+                for(
+                int index2 = 0;
+                index2 < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables;
+                index2++
+                    )
+                {
+                  if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(index)->values.at(0) != *varCheck)
+                  {
+                    std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(index)->values.at(index2) << "|";
+                  }
+                }
+                if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(index)->values.at(0) != *varCheck)
+                {
+                  std::cout << std::endl;
+                }
+            }
+
+          }
+        }
+
+
+        }else
+        {
+
+          std::cout << "no where specifed in select" << std::endl;
+
+        }
+
+
 
       }else
       {
@@ -456,7 +539,43 @@ void stringHandler(std::vector<string*>* mvector,
 
     }
 
+  }else
+  if(*stringHold == "delete")
+  {
+    stringHold = mvector->at(1);
+
+    if(*stringHold == "from")
+    {
+      stringHold = mvector->at(2); // table name
+      stringHold->at(0) = toupper(stringHold->at(0));
+
+      // Locate the database to add a table to it
+      int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+      // Using the dataBaseIndex find the table
+      int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+      stringHold = mvector->at(3); // eat where
+
+      string* varName = mvector->at(4);
+      string* varOperator = mvector->at(5);
+      string* varDelete = mvector->at(6);
+
+      // find name in variableNames
+      int indexName = getIndexStringVector(*varName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+      // anything = to that must be deleted
+      if(indexName != -1)
+      {
+
+      }
+
+    }else
+    {
+      std::cout << "delete, from what?" << std::endl;
+    }
+
+
   }
+
 
 }
 
@@ -482,6 +601,20 @@ int getTableIndex(std::string mstring, std::vector<TableStruct*>* mvector)
   for(index = 0; index < mvector->size(); index++)
   {
     if(mvector->at(index)->name == mstring)
+    {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+int getIndexStringVector(std::string mstring, std::vector<string>* mvector)
+{
+  int index;
+  for(index = 0; index < mvector->size(); index++)
+  {
+    if(mvector->at(index) == mstring)
     {
       return index;
     }
