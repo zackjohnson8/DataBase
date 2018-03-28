@@ -624,24 +624,28 @@ void stringHandler(std::vector<string*>* mvector,
     {
 
       stringHold = mvector->at(2); // set
-      string* setName = mvector->at(3); // set what? name of thing
+      stringHold = mvector->at(3);
+      string* setName = mvector->at(5); // set what? name of thing
       // locate name
-      int indexSetName = getIndexStringVector(*setName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+      int indexSetName = getIndexStringVector(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
 
-      stringHold = mvector->at(4); // where
-      string* whereName = mvector->at(5); // where what? name of thing
+      stringHold = mvector->at(6); // where
+      stringHold = mvector->at(7);
+      string* whereName = mvector->at(9); // where what? name of thing
       // locate name
       int indexWhereName = getIndexStringVector(*whereName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
 
+      // where
+
       // Now go through the storage and do as it says
-      for(int x = 0; x < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size();x++)
+    /*  for(int x = 0; x < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size();x++)
       {
-        if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexSetName) == *whereName)
+        if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexWhereName) == *whereName)
         {
           vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexSetName) = *setName;
         }
       }
-
+*/
 
 
     }else
