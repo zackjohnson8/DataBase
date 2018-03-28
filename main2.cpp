@@ -562,9 +562,45 @@ void stringHandler(std::vector<string*>* mvector,
 
       // find name in variableNames
       int indexName = getIndexStringVector(*varName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+
       // anything = to that must be deleted
-      if(indexName != -1)
+      if(*varOperator == "=")
       {
+
+        // delete all the storages correctly
+        for(int x = 0; x < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size(); x++)
+        {
+          if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexName) == *varDelete)
+          {
+            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.erase(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.begin()+x-1);
+          }
+        }
+
+        // Can I have another in this?
+        int indexName = getIndexStringVector(*varName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+
+
+      }else
+      if(*varOperator == ">")
+      {
+
+        // delete all the storages correctly
+        for(int x = 0; x < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size(); x++)
+        {
+
+          if(
+          strtof(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexName).c_str(),0)
+          >
+          strtof(varDelete->c_str(),0)
+          )
+          {
+            std::cout << "DELETE" << std::endl;
+            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.erase(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.begin()+x);
+          }
+        }
+
+        // Can I have another in this?
+        int indexName = getIndexStringVector(*varName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
 
       }
 
