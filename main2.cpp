@@ -594,7 +594,6 @@ void stringHandler(std::vector<string*>* mvector,
           strtof(varDelete->c_str(),0)
           )
           {
-            std::cout << "DELETE" << std::endl;
             vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.erase(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.begin()+x);
           }
         }
@@ -609,6 +608,48 @@ void stringHandler(std::vector<string*>* mvector,
       std::cout << "delete, from what?" << std::endl;
     }
 
+
+  }else
+  if(*stringHold == "update")
+  {
+
+    stringHold = mvector->at(1); // update what?
+
+    // Locate the database to add a table to it
+    int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
+    // Using the dataBaseIndex find the table
+    int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+    if(tableIndex != -1) // can continue
+    {
+
+      stringHold = mvector->at(2); // set
+      string* setName = mvector->at(3); // set what? name of thing
+      // locate name
+      int indexSetName = getIndexStringVector(*setName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+
+      stringHold = mvector->at(4); // where
+      string* whereName = mvector->at(5); // where what? name of thing
+      // locate name
+      int indexWhereName = getIndexStringVector(*whereName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
+
+      // Now go through the storage and do as it says
+      for(int x = 0; x < vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.size();x++)
+      {
+        if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexSetName) == *whereName)
+        {
+          vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexSetName) = *setName;
+        }
+      }
+
+
+
+    }else
+    {
+
+      std::cout << "ERROR: Cannot update a table that does not exist" << std::endl;
+
+    }
 
   }
 
