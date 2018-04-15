@@ -73,6 +73,8 @@ int getIndexStringVector(std::string mstring, std::vector<string>* mvector);
 
 void saveData(std::vector<DataBaseStruct*> vectorDataBases);
 
+void printDatabase(std::vector<DataBaseStruct*> vectorDataBases);
+
 //////////////////////////////////////////////
 
 int main(int argc, char *argv[])
@@ -443,21 +445,28 @@ void stringHandler(std::vector<string*>* mvector,
           // Print each variableName and variableType
           if(debugging)
           {
-          std::cout <<
-          vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index) << " " <<
-          vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index) << "|";
+            std::cout <<
+            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index) << " " <<
+            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index) << "|";
+            // Handling for the last variableName and variableType since the loop above needs to add "|"
+            if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1))
+            {
+
+              std::cout <<
+              vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index+1) << " " <<
+              vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index+1) << std::endl;
+
+            }
           }
 
+          printDatabase(*vectorDataBases);
+          std::cout << std::endl;
+
         }
 
-        intHold = vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables - 1;
+        //intHold = vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables - 1;
+        // Now print out all selected
 
-        if(debugging)
-        {
-        std::cout <<
-        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(intHold) << " " <<
-        vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(intHold) << std::endl;
-        }
 
 
       }
@@ -625,7 +634,7 @@ void stringHandler(std::vector<string*>* mvector,
           if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexName) == *varDelete)
           {
             count++;
-            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.erase(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.begin()+x-1);
+            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.erase(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.begin()+x);
           }
         }
 
@@ -654,7 +663,7 @@ void stringHandler(std::vector<string*>* mvector,
 
         // Can I have another in this?
         int indexName = getIndexStringVector(*varName, &vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames);
-        std::cout << "1" << " records deleted." << std::endl;
+        std::cout << count << " records deleted." << std::endl;
 
       }
 
@@ -668,6 +677,7 @@ void stringHandler(std::vector<string*>* mvector,
   if(*stringHold == "update")
   {
 
+    int modifiedCount = 0;
     stringHold = mvector->at(1); // update what?
 
     // Locate the database to add a table to it
@@ -698,10 +708,16 @@ void stringHandler(std::vector<string*>* mvector,
         if(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexWhereName) == *whereName)
         {
           vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->storage.at(x)->values.at(indexSetName) = *setName;
+          modifiedCount++;
         }
       }
 
+      if(modifiedCount > 0)
+      {
 
+        std::cout << modifiedCount << " records modifed." << std::endl;
+
+      }
 
     }else
     {
@@ -709,6 +725,8 @@ void stringHandler(std::vector<string*>* mvector,
       std::cout << "ERROR: Cannot update a table that does not exist" << std::endl;
 
     }
+
+
 
   }
 
@@ -809,6 +827,43 @@ bool searchDataBaseNames(std::string mstring,
   return false;
 
 }
+
+void printDatabase(std::vector<DataBaseStruct*> vectorDataBases)
+{
+
+  for(int dataBaseIndex = 0;
+      dataBaseIndex < vectorDataBases.size();
+      dataBaseIndex++)
+  {
+
+    // Tables
+    for(int tableIndex = 0; tableIndex < vectorDataBases.at(dataBaseIndex)->tables.size(); tableIndex++)
+    {
+
+      // then all the values
+      for(int valueIndex = 0; valueIndex < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.size(); valueIndex++)
+      {
+
+        // for each piece of storage we need to print all the values
+        for(int y = 0; y < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1; y++)
+        {
+
+          std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y) << "|";
+
+          // Handling for last one to be output
+          if(y+1 == vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1)
+          {
+            std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y+1) << std::endl;
+          }
+
+        }
+
+      }
+
+    }
+  }
+}
+
 /*
 
 
