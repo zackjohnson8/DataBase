@@ -434,7 +434,6 @@ void stringHandler(std::vector<string*>* mvector,
       {
 
         SELECTED.name = *stringHold;
-
         // else, selected all so lets output for that
         int index;
         for(index = 0;
@@ -451,7 +450,6 @@ void stringHandler(std::vector<string*>* mvector,
             // Handling for the last variableName and variableType since the loop above needs to add "|"
             if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1))
             {
-
               std::cout <<
               vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index+1) << " " <<
               vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index+1) << std::endl;
@@ -459,15 +457,11 @@ void stringHandler(std::vector<string*>* mvector,
             }
           }
 
-          printDatabase(*vectorDataBases);
-          std::cout << std::endl;
+
 
         }
 
-        //intHold = vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables - 1;
-        // Now print out all selected
-
-
+        printDatabase(*vectorDataBases);
 
       }
 
@@ -475,7 +469,7 @@ void stringHandler(std::vector<string*>* mvector,
 
     }else // Wasn't select *
     {
-
+      std::cout << std::endl;
       SELECTED.all = false;
       intHold = 2;
 
@@ -516,6 +510,32 @@ void stringHandler(std::vector<string*>* mvector,
         // where what?
         stringHold = mvector->at(intHold);
         intHold++;
+
+//////////////////////////////////////////////////////////////
+
+        vector<int> holdIntVector;
+
+        // select name, price instead of * all
+        // Locate the position of these
+        for(int index = 0; index < holdStrings.size(); index++)
+        {
+
+          // get the position within variableNames
+          holdIntVector.push_back(getIndexStringVector(holdStrings.at(index), &(vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames)));
+
+        }
+
+        // debug
+        // std::cout << std::endl << std::endl;
+        //
+        // for(int index = 0; index < holdIntVector.size(); index++)
+        // {
+        //   std::cout << holdIntVector.at(index) << ", ";
+        // }
+        //
+        // std::cout << std::endl << std::endl;
+
+//////////////////////////////////////////////////////////////////
 
         if(*stringHold == "where")
         {
