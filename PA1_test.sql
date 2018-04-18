@@ -1,4 +1,6 @@
 --CS457 PA1
+nikkolasjirwin@yahoo.com
+nikkolasjirwin@nevada.unr.edu
 
 --Database metadata (20 points)
 CREATE DATABASE db_1;

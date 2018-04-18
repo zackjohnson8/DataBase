@@ -14,6 +14,14 @@
 
 using namespace std;
 
+struct duoString
+{
+
+  std::string tableName;
+  std::string alsoName;
+
+};
+
 struct TableValueStruct
 {
 
@@ -90,7 +98,7 @@ int main(int argc, char *argv[])
   if(argc <= 1)
   {
     //std::cout << "Using default file name PA1_test.sql" << std::endl;
-    fileName = "PA2_test.sql";
+    fileName = "PA3_test.sql";
   }else
   {
     //std::cout << "Using provided file name " << argv[1] << std::endl;
@@ -239,7 +247,7 @@ void stringHandler(std::vector<string*>* mvector,
 
 
 
-  if(*stringHold == "CREATE")
+  if(*stringHold == "CREATE" || *stringHold == "create")
   {
     stringHold = mvector->at(1);
     if(*stringHold == "DATABASE")
@@ -263,8 +271,9 @@ void stringHandler(std::vector<string*>* mvector,
 
 
     }else
-    if(*stringHold == "TABLE")
+    if(*stringHold == "TABLE" || *stringHold == "table")
     {
+
       stringHold = mvector->at(2); // get the table name
 
       // Locate the database to add a table to it
@@ -286,6 +295,8 @@ void stringHandler(std::vector<string*>* mvector,
         *stringHold = stringHold->substr(1, stringHold->size()); // eat (
         newTable->variableNames.push_back(*stringHold);
         newTable->numberOfVariables++;
+
+        std::cout << *stringHold << std::endl;
         // set the type for first value
         intHold = 4;
         stringHold = mvector->at(intHold);
@@ -296,6 +307,7 @@ void stringHandler(std::vector<string*>* mvector,
         // Now for the loop
         while(loopEnd)
         {
+
           newTable->numberOfVariables++;
           // Handle Name of variable
           stringHold = mvector->at(intHold);
@@ -420,8 +432,74 @@ void stringHandler(std::vector<string*>* mvector,
     if(*stringHold == "*")// grab all values
     {
       SELECTED.all = true;
-      stringHold = mvector->at(2); // from
-      stringHold = mvector->at(3); // name of TableStruct
+      int wordLocation = 2;
+      stringHold = mvector->at(wordLocation); // from
+      wordLocation++;
+
+///////////////////////////////////////////////////////////////////////////
+
+      // Get list of tables we'll be using
+      vector<duoString*> vectorDuoString;
+      duoString* holdDuoString;
+
+      stringHold = mvector->at(wordLocation); // name of TableStruct
+      wordLocation++;
+
+      // while the string hold does not == on
+      while(*stringHold != "on" || *stringHold != "where")
+      {
+
+        // grab Emplyee
+        holdDuoString = new duoString();
+        holdDuoString->tableName = *stringHold;
+
+        // grab the letter they are assigning it
+        stringHold = mvector->at(wordLocation);
+        wordLocation++;
+        holdDuoString->alsoName = *stringHold;
+
+        // grab the next word to see where we are
+        stringHold = mvector->at(wordLocation);
+        wordLocation++;
+
+        // so where are we
+        if(*stringHold == "inner")
+        {
+
+          stringHold = mvector->at(wordLocation);
+          wordLocation++; // eat join
+          stringHold = mvector->at(wordLocation);
+          wordLocation++; // grab the next table
+
+        }else
+        if(*stringHold == "left")
+        {
+
+          stringHold = mvector->at(wordLocation);
+          wordLocation++; // is this a table name or a command
+
+          if(*stringHold == "outer")
+          {
+
+            stringHold = mvector->at(wordLocation);
+            wordLocation++; // eat join
+
+            stringHold = mvector->at(wordLocation);
+            wordLocation++; // grab the next table
+
+          }
+
+
+
+        }
+
+        vectorDuoString.push_back(holdDuoString);
+
+
+      }
+
+///////////////////////////////////////////////////////////////////////////
+
 
       // Locate the database to add a table to it
       int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
@@ -439,6 +517,22 @@ void stringHandler(std::vector<string*>* mvector,
 
         SELECTED.name = *stringHold;
         // else, selected all so lets output for that
+//////////////////////////////////////////////////////////////////////////
+
+        // Now we'll need to select from many different tables
+        // Collect all tables and Description letter
+
+        stringHold = mvector->at(wordLocation);
+        wordLocation++;
+
+        if(*stringHold != "where" || *stringHold != "on")
+        {
+          // create duoString
+          //holdDuoString = new duoString();
+          std::cout << "Get on E.id = S.emplyeeID" << std::endl;
+        }
+
+//////////////////////////////////////////////////////////////////////////
         int index;
         for(index = 0;
             index < (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1);
