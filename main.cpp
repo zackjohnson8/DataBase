@@ -500,11 +500,30 @@ void stringHandler(std::vector<string*>* mvector,
 
 ///////////////////////////////////////////////////////////////////////////
 
+      // The problem is get table index is looking for where table which isn't a thing
 
       // Locate the database to add a table to it
       int dataBaseIndex = getDataBaseIndex(USED, vectorDataBases);
-      // Using the dataBaseIndex find the table
-      int tableIndex = getTableIndex(*stringHold, &vectorDataBases->at(dataBaseIndex)->tables);
+
+      int tableIndex = 0;
+      vector<int> vectorTableIndex;
+      // Have mutliple tables now so lets get them all with a vector
+      for(int index = 0; index < vectorDuoString.size(); index++)
+      {
+
+        // Using the dataBaseIndex find the table
+        vectorTableIndex.push_back(getTableIndex(vectorDuoString.at(index)->tableName, &vectorDataBases->at(dataBaseIndex)->tables));
+
+        if(vectorTableIndex.at(index) == -1)
+        {
+
+          tableIndex = -1;
+
+        }
+
+      }
+
+
 
       // We now have the location of, for our example, Product
       if(tableIndex == -1) // couldn't find it
@@ -523,16 +542,16 @@ void stringHandler(std::vector<string*>* mvector,
         // Collect all tables and Description letter
 
         stringHold = mvector->at(wordLocation);
+        wordLocation++; // E.id
+        string holdOperator = mvector->at(wordLocation);
+        wordLocation++;
+        string stringHold2 = mvector->at(wordLocation);
         wordLocation++;
 
-        if(*stringHold != "where" || *stringHold != "on")
-        {
-          // create duoString
-          //holdDuoString = new duoString();
-          std::cout << "Get on E.id = S.emplyeeID" << std::endl;
-        }
-
 //////////////////////////////////////////////////////////////////////////
+
+        // We now have all the tables and
+        // TODO: for each selected table
         int index;
         for(index = 0;
             index < (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1);
