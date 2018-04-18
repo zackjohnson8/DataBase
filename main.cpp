@@ -446,7 +446,7 @@ void stringHandler(std::vector<string*>* mvector,
       wordLocation++;
 
       // while the string hold does not == on
-      while(*stringHold != "on" || *stringHold != "where")
+      while(*stringHold != "on" && *stringHold != "where")
       {
 
         // grab Emplyee
@@ -460,7 +460,7 @@ void stringHandler(std::vector<string*>* mvector,
 
         // grab the next word to see where we are
         stringHold = mvector->at(wordLocation);
-        wordLocation++;
+        wordLocation++; // either inner left or new table
 
         // so where are we
         if(*stringHold == "inner")
@@ -495,8 +495,8 @@ void stringHandler(std::vector<string*>* mvector,
 
         vectorDuoString.push_back(holdDuoString);
 
-
       }
+      // Now have vectorDuoString filled with the tables that will needed for the output
 
 ///////////////////////////////////////////////////////////////////////////
 
