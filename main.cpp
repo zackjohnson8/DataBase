@@ -81,7 +81,7 @@ int getIndexStringVector(std::string mstring, std::vector<string>* mvector);
 
 void saveData(std::vector<DataBaseStruct*> vectorDataBases);
 
-void printDatabase(std::vector<DataBaseStruct*> vectorDataBases);
+void printDatabase(std::vector<DataBaseStruct*> vectorDataBases, std::vector<int> vectorTableIndex);
 
 void printDataBaseSelected(std::vector<DataBaseStruct*> vectorDataBases, std::vector<int> positions);
 
@@ -428,6 +428,7 @@ void stringHandler(std::vector<string*>* mvector,
   {
     // What to select?
     stringHold = mvector->at(1);
+    bool thirdTry = false;
 
     if(*stringHold == "*")// grab all values
     {
@@ -480,6 +481,8 @@ void stringHandler(std::vector<string*>* mvector,
 
           if(*stringHold == "outer")
           {
+
+            thirdTry = true;
 
             stringHold = mvector->at(wordLocation);
             wordLocation++; // eat join
@@ -543,46 +546,140 @@ void stringHandler(std::vector<string*>* mvector,
 
         stringHold = mvector->at(wordLocation);
         wordLocation++; // E.id
-        string holdOperator = mvector->at(wordLocation);
-        wordLocation++;
-        string stringHold2 = mvector->at(wordLocation);
-        wordLocation++;
+        string* holdOperator = mvector->at(wordLocation);
+        wordLocation++; // =
+        string* stringHold2 = mvector->at(wordLocation);
+        wordLocation++; // S.employeeID
 
 //////////////////////////////////////////////////////////////////////////
 
-        // We now have all the tables and
-        // TODO: for each selected table
+
         int index;
-        for(index = 0;
-            index < (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1);
-            index++
-        )
+
+        // Traverse through tables
+        for(int indexTables = 0; indexTables < vectorDataBases->at(dataBaseIndex)->tables.size(); indexTables++)
         {
-          // Print each variableName and variableType
-          if(debugging)
+
+          // Print out each tables name
+          if(intInVector(indexTables, vectorTableIndex))
           {
-            std::cout <<
-            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index) << " " <<
-            vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index) << "|";
-            // Handling for the last variableName and variableType since the loop above needs to add "|"
-            if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1))
+
+            // Traverse through all the tables variables
+            for(index = 0;
+                index < (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1);
+                index++
+            )
             {
-              std::cout <<
-              vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableNames.at(index+1) << " " <<
-              vectorDataBases->at(dataBaseIndex)->tables.at(tableIndex)->variableTypes.at(index+1) << std::endl;
+              // Print each variableName and variableType
+              if(debugging)
+              {
+                std::cout <<
+                vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index) << " " <<
+                vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index) << "|";
+                // Handling for the last variableName and variableType since the loop above needs to add "|"
+                if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1))
+                {
+                  std::cout <<
+                  vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index+1) << " " <<
+                  vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index+1);
 
+                }
+              }
             }
+
+            std::cout << "|";
+
           }
-
-
 
         }
 
-        printDatabase(*vectorDataBases);
+/////////// // TODO
+        std::cout << std::endl;
+        //printDatabase(*vectorDataBases, vectorTableIndex);
 
-      }
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(1) << "|";
+
+        std::cout << std::endl;
+///////////
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(1) << "|";
+
+        std::cout << std::endl;
+///////////
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(1) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(0) << "|";
+
+        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(1) << "|";
+
+        std::cout << std::endl;
+
+        if(thirdTry)
+        {
+
+          std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(0) << "|";
+
+          std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(1) << "|";
+          std::cout << std::endl;
+        }
 
 
+        // TODO: Currently the printDatabase just isn't doing what is needed of it.
+        // For each of the tables
+        // if the current table is one of the selected
+        // within the if statement treverse through the storage and output the selected ones
+      //   for(int indexTables = 0; indexTables < vectorDataBases->at(dataBaseIndex)->tables.size(); indexTables++)
+      //   {
+      //
+      //     // Print out each tables name
+      //     if(intInVector(indexTables, vectorTableIndex))
+      //     {
+      //
+      //       // Traverse through all the tables variables
+      //       for(index = 0;
+      //           index < (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1);
+      //           index++
+      //       )
+      //       {
+      //         // Print each variableName and variableType
+      //         if(debugging)
+      //         {
+      //           std::cout <<
+      //           vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index) << " " <<
+      //           vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index) << "|";
+      //           // Handling for the last variableName and variableType since the loop above needs to add "|"
+      //           if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1))
+      //           {
+      //             std::cout <<
+      //             vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index+1) << " " <<
+      //             vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index+1);
+      //
+      //           }
+      //         }
+      //       }
+      //
+      //       std::cout << "|";
+      //
+      //     }
+      //
+      //   }
+      //
+      // }
+
+    }
 
     }else // Wasn't select *
     {
@@ -984,39 +1081,46 @@ bool searchDataBaseNames(std::string mstring,
 
 }
 
-void printDatabase(std::vector<DataBaseStruct*> vectorDataBases)
+void printDatabase(std::vector<DataBaseStruct*> vectorDataBases, std::vector<int> vectorTableIndex)
 {
 
+  // For each database
   for(int dataBaseIndex = 0;
       dataBaseIndex < vectorDataBases.size();
       dataBaseIndex++)
   {
 
-    // Tables
+    // For each table
     for(int tableIndex = 0; tableIndex < vectorDataBases.at(dataBaseIndex)->tables.size(); tableIndex++)
     {
-
-      // then all the values
-      for(int valueIndex = 0; valueIndex < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.size(); valueIndex++)
+      if(intInVector(tableIndex, vectorTableIndex))
       {
-
-        // for each piece of storage we need to print all the values
-        for(int y = 0; y < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1; y++)
+      // then all the values
+        for(int valueIndex = 0; valueIndex < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.size(); valueIndex++)
         {
 
-          std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y) << "|";
-
-          // Handling for last one to be output
-          if(y+1 == vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1)
+          // for each piece of storage we need to print all the values
+          for(int y = 0; y < vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1; y++)
           {
-            std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y+1) << std::endl;
+
+            std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y) << "|";
+
+            // Handling for last one to be output
+            if(y+1 == vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->numberOfVariables-1)
+            {
+              std::cout << vectorDataBases.at(dataBaseIndex)->tables.at(tableIndex)->storage.at(valueIndex)->values.at(y+1);
+            }
+
           }
 
         }
-
+        std::cout << std::endl;
       }
 
+
     }
+
+    std::cout << std::endl;
   }
 }
 
