@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   if(argc <= 1)
   {
     //std::cout << "Using default file name PA1_test.sql" << std::endl;
-    fileName = "PA3_test.sql";
+    fileName = "PA4_test.sql";
   }else
   {
     //std::cout << "Using provided file name " << argv[1] << std::endl;
@@ -296,7 +296,7 @@ void stringHandler(std::vector<string*>* mvector,
         newTable->variableNames.push_back(*stringHold);
         newTable->numberOfVariables++;
 
-        std::cout << *stringHold << std::endl;
+        //std::cout << *stringHold << std::endl;
         // set the type for first value
         intHold = 4;
         stringHold = mvector->at(intHold);
@@ -365,6 +365,16 @@ void stringHandler(std::vector<string*>* mvector,
       std::cout << "Error: Cannot use a database that does not exist." << std::endl;
     }
   }else
+  if(*stringHold == "begin")
+  {
+    stringHold = mvector->at(1); // begin what? transaction
+
+    if(*stringHold == "transaction")
+    {
+      std::cout << "Transaction start" << std::endl;
+    }
+
+  }
   if(*stringHold == "insert")
   {
     stringHold = mvector->at(1); // Take in into
@@ -437,8 +447,6 @@ void stringHandler(std::vector<string*>* mvector,
       stringHold = mvector->at(wordLocation); // from
       wordLocation++;
 
-///////////////////////////////////////////////////////////////////////////
-
       // Get list of tables we'll be using
       vector<duoString*> vectorDuoString;
       duoString* holdDuoString;
@@ -501,8 +509,6 @@ void stringHandler(std::vector<string*>* mvector,
       }
       // Now have vectorDuoString filled with the tables that will needed for the output
 
-///////////////////////////////////////////////////////////////////////////
-
       // The problem is get table index is looking for where table which isn't a thing
 
       // Locate the database to add a table to it
@@ -539,7 +545,6 @@ void stringHandler(std::vector<string*>* mvector,
 
         SELECTED.name = *stringHold;
         // else, selected all so lets output for that
-//////////////////////////////////////////////////////////////////////////
 
         // Now we'll need to select from many different tables
         // Collect all tables and Description letter
@@ -550,8 +555,6 @@ void stringHandler(std::vector<string*>* mvector,
         wordLocation++; // =
         string* stringHold2 = mvector->at(wordLocation);
         wordLocation++; // S.employeeID
-
-//////////////////////////////////////////////////////////////////////////
 
 
         int index;
@@ -593,93 +596,91 @@ void stringHandler(std::vector<string*>* mvector,
 
         }
 
-/////////// // TODO
-        std::cout << std::endl;
-        //printDatabase(*vectorDataBases, vectorTableIndex);
+        // TODO
+        // std::cout << std::endl;
+        printDatabase(*vectorDataBases, vectorTableIndex);
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(1) << "|";
+        //
+        // std::cout << std::endl;
+        // // seperation
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(1) << "|";
+        //
+        // std::cout << std::endl;
+        // // seperation
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(1) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(0) << "|";
+        //
+        // std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(1) << "|";
+        //
+        // std::cout << std::endl;
 
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(0)->values.at(1) << "|";
-
-        std::cout << std::endl;
-///////////
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(0)->values.at(1) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(1)->values.at(1) << "|";
-
-        std::cout << std::endl;
-///////////
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(1)->values.at(1) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(0) << "|";
-
-        std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(1)->storage.at(2)->values.at(1) << "|";
-
-        std::cout << std::endl;
-
-        if(thirdTry)
-        {
-
-          std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(0) << "|";
-
-          std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(1) << "|";
-          std::cout << std::endl;
-        }
+        // if(thirdTry)
+        // {
+        //
+        //   std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(0) << "|";
+        //
+        //   std::cout << vectorDataBases->at(dataBaseIndex)->tables.at(0)->storage.at(2)->values.at(1) << "|";
+        //   std::cout << std::endl;
+        // }
 
 
         // TODO: Currently the printDatabase just isn't doing what is needed of it.
         // For each of the tables
         // if the current table is one of the selected
         // within the if statement treverse through the storage and output the selected ones
-      //   for(int indexTables = 0; indexTables < vectorDataBases->at(dataBaseIndex)->tables.size(); indexTables++)
-      //   {
-      //
-      //     // Print out each tables name
-      //     if(intInVector(indexTables, vectorTableIndex))
-      //     {
-      //
-      //       // Traverse through all the tables variables
-      //       for(index = 0;
-      //           index < (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1);
-      //           index++
-      //       )
-      //       {
-      //         // Print each variableName and variableType
-      //         if(debugging)
-      //         {
-      //           std::cout <<
-      //           vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index) << " " <<
-      //           vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index) << "|";
-      //           // Handling for the last variableName and variableType since the loop above needs to add "|"
-      //           if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1))
-      //           {
-      //             std::cout <<
-      //             vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index+1) << " " <<
-      //             vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index+1);
-      //
-      //           }
-      //         }
-      //       }
-      //
-      //       std::cout << "|";
-      //
-      //     }
-      //
-      //   }
-      //
-      // }
+        for(int indexTables = 0; indexTables < vectorDataBases->at(dataBaseIndex)->tables.size(); indexTables++)
+        {
 
-    }
+          // Print out each tables name
+          if(intInVector(indexTables, vectorTableIndex))
+          {
+
+            // Traverse through all the tables variables
+            for(index = 0;
+                index < (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1);
+                index++
+            )
+            {
+              // Print each variableName and variableType
+              if(debugging)
+              {
+                std::cout <<
+                vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index) << " " <<
+                vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index) << "|";
+                // Handling for the last variableName and variableType since the loop above needs to add "|"
+                if(index+1 == (vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->numberOfVariables-1))
+                {
+                  std::cout <<
+                  vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableNames.at(index+1) << " " <<
+                  vectorDataBases->at(dataBaseIndex)->tables.at(indexTables)->variableTypes.at(index+1);
+
+                }
+              }
+            }
+
+            std::cout << "|";
+
+          }
+
+        }
+
+      }
 
     }else // Wasn't select *
     {
@@ -724,8 +725,6 @@ void stringHandler(std::vector<string*>* mvector,
         stringHold = mvector->at(intHold);
         intHold++;
 
-//////////////////////////////////////////////////////////////
-
         vector<int> holdIntVector;
 
         // select name, price instead of * all
@@ -764,8 +763,6 @@ void stringHandler(std::vector<string*>* mvector,
           }
         }
 
-
-//////////////////////////////////////////////////////////////////
 
         if(*stringHold == "where")
         {
@@ -817,11 +814,10 @@ void stringHandler(std::vector<string*>* mvector,
                 {
                   std::cout << std::endl;
                 }
+              }
+
             }
-
           }
-        }
-
 
         }else
         {
@@ -850,9 +846,7 @@ void stringHandler(std::vector<string*>* mvector,
 
       //std::cout << "The int = " << intHold << std::endl;
 
-
     }
-
   }else
   if(*stringHold == "delete")
   {
